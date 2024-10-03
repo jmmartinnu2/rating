@@ -149,21 +149,9 @@ with tab1:
     # Formulario para ingresar información y valoraciones
     with st.form("rating_form"):
         nuevo_nombre = st.text_input(languages[st.session_state.language]["name"])
-        # Definir la lista de cargos
-        positions = {
-            "es": [
-                "Director Deportivo", "Entrenador", "Asistente", 
-                "Jefe de Scouting", "Scouting", "CEO", "Analista de Datos"
-            ],
-            "en": [
-                "Sports Director", "Coach", "Assistant", 
-                "Head Scout", "Scout", "CEO", "Data Analyst"
-            ]
-        }
-
-        # Luego, en el formulario de evaluación:
-        nuevo_cargo = st.selectbox(languages[st.session_state.language]["position"], options=positions[st.session_state.language])
-
+        nuevo_cargo = st.selectbox(languages[st.session_state.language]["position"], options=[
+            "Director Deportivo", "Entrenador", "Asistente", "Jefe de Scouting", "Scouting", "CEO", "Analista de Datos"
+        ])
         countries = {
     "es": [
         "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Antigua y Barbuda", "Arabia Saudita", "Argelia", 
@@ -253,68 +241,54 @@ with tab1:
                 # Calcular las estrellas basadas en la media de las valoraciones
                 estrellas = (claridad_com + rapidez_resp + actitud_prof + cortesía + eficiencia_proc + solucion_prob + fiabilidad_info + cumplimiento + accesibilidad + flexibilidad) / 10
                 
-            # Definir un diccionario para las columnas
-            column_names = {
-                "es": [
-                    "Pais", "Club", "Cargo", "Nombre", "Agente",
-                    "Claridad en la Comunicación", "Rapidez en las Respuestas",
-                    "Actitud Profesional", "Cortesía y Amabilidad",
-                    "Eficiencia en Procesos", "Solución de Problemas",
-                    "Fiabilidad de la Información", "Cumplimiento de Compromisos",
-                    "Accesibilidad", "Flexibilidad", "Comentarios Generales", "Estrellas"
-                ],
-                "en": [
-                    "Country", "Club", "Position", "Name", "Agent",
-                    "Clarity in Communication", "Speed of Response",
-                    "Professional Attitude", "Courtesy and Kindness",
-                    "Efficiency in Processes", "Problem Solving",
-                    "Reliability of Information", "Commitment Fulfillment",
-                    "Accessibility", "Flexibility", "General Comments", "Stars"
-                ]
-            }
+                new_rating = pd.DataFrame({
+                    'Pais': [nuevo_pais],
+                    'Club': [nuevo_club],
+                    'Cargo': [nuevo_cargo],
+                    'Nombre': [nuevo_nombre],
+                    'Agente': [nuevo_nombre],
+                    'Claridad en la Comunicación': [claridad_com],
+                    'Rapidez en las Respuestas': [rapidez_resp],
+                    'Actitud Profesional': [actitud_prof],
+                    'Cortesía y Amabilidad': [cortesía],
+                    'Eficiencia en Procesos': [eficiencia_proc],
+                    'Solución de Problemas': [solucion_prob],
+                    'Fiabilidad de la Información': [fiabilidad_info],
+                    'Cumplimiento de Compromisos': [cumplimiento],
+                    'Accesibilidad': [accesibilidad],
+                    'Flexibilidad': [flexibilidad],
+                    'Comentarios Generales': [comentario],
+                    'Estrellas': [estrellas]  # Añadir la columna de estrellas
+                })
+                
+                ratings = pd.concat([ratings, new_rating], ignore_index=True)
+                st.success("¡Valoración enviada exitosamente!")
 
-            # Verificar si el archivo CSV existe y cargarlo
-            result_file_path = os.path.join('data', 'result-rating.csv')
-            if os.path.exists(result_file_path):
-                ratings = pd.read_csv(result_file_path)
-            else:
-                ratings = create_empty_data()  # Iniciar el DataFrame vacío si no existe el archivo
-
-            # Crear un nuevo DataFrame con las columnas adecuadas según el idioma
-            new_rating = pd.DataFrame({
-                'Pais': [nuevo_pais],
-                'Club': [nuevo_club],
-                'Cargo': [nuevo_cargo],
-                'Nombre': [nuevo_nombre],
-                'Agente': [nuevo_nombre],
-                'Claridad en la Comunicación': [claridad_com],
-                'Rapidez en las Respuestas': [rapidez_resp],
-                'Actitud Profesional': [actitud_prof],
-                'Cortesía y Amabilidad': [cortesía],
-                'Eficiencia en Procesos': [eficiencia_proc],
-                'Solución de Problemas': [solucion_prob],
-                'Fiabilidad de la Información': [fiabilidad_info],
-                'Cumplimiento de Compromisos': [cumplimiento],
-                'Accesibilidad': [accesibilidad],
-                'Flexibilidad': [flexibilidad],
-                'Comentarios Generales': [comentario],
-                'Estrellas': [estrellas]  # Añadir la columna de estrellas
-            })
-
-            # Agregar la nueva valoración al DataFrame
-            ratings = pd.concat([ratings, new_rating], ignore_index=True)
-            st.success("¡Valoración enviada exitosamente!")
-
-            # Guardar en el archivo correspondiente según el idioma
-            if st.session_state.language == "en":
-                result_file_path = os.path.join('data', 'result-rating-en.csv')
-            else:
-                result_file_path = os.path.join('data', 'result-rating-es.csv')
-
-            # Guardar el DataFrame en el CSV con las columnas correctas
-            ratings.columns = column_names[st.session_state.language]  # Renombrar columnas
-            ratings.to_csv(result_file_path, mode='w', header=True, index=False)  # Sobrescribir el archivo con todos los datos
-
+                # Guardar en el archivo correspondiente según el idioma seleccionado
+                if st.session_state.language == "es":
+                    ratings.to_csv(result_file_path_es, mode='w', header=True, index=False)  # Sobrescribir el archivo con todos los datos en español
+                else:
+                    # Renombrar las columnas al inglés antes de guardar
+                    new_rating.rename(columns={
+                        'Pais': 'Country',
+                        'Club': 'Club',
+                        'Cargo': 'Position',
+                        'Nombre': 'Name',
+                        'Agente': 'Agent',
+                        'Claridad en la Comunicación': 'Clarity in Communication',
+                        'Rapidez en las Respuestas': 'Speed of Response',
+                        'Actitud Profesional': 'Professional Attitude',
+                        'Cortesía y Amabilidad': 'Courtesy and Kindness',
+                        'Eficiencia en Procesos': 'Efficiency in Processes',
+                        'Solución de Problemas': 'Problem Solving',
+                        'Fiabilidad de la Información': 'Reliability of Information',
+                        'Cumplimiento de Compromisos': 'Commitment Fulfillment',
+                        'Accesibilidad': 'Accessibility',
+                        'Flexibilidad': 'Flexibility',
+                        'Comentarios Generales': 'General Comments',
+                        'Estrellas': 'Stars'
+                    }, inplace=True)
+                    ratings.to_csv(result_file_path_en, mode='w', header=True, index=False)  # Sobrescribir el archivo con todos los datos en inglés
 
 # ----------------------------
 # Tab 2: Valoraciones Recientes
