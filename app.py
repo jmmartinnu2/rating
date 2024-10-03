@@ -121,19 +121,14 @@ def create_empty_data():
         'Comentarios Generales', 'Estrellas'
     ])
 
-# Asegurarse de que el directorio 'data' exista
-os.makedirs('data', exist_ok=True)
-
 # Verificar si el archivo CSV existe y cargarlo
-result_file_path = os.path.join('data', 'result-rating.csv')  # Ruta local
-if os.path.exists(result_file_path):
-    ratings = pd.read_csv(result_file_path)
+result_file_path_es = os.path.join('data', 'result-rating-es.csv')
+result_file_path_en = os.path.join('data', 'result-rating-en.csv')
+
+if os.path.exists(result_file_path_es):
+    ratings = pd.read_csv(result_file_path_es)
 else:
     ratings = create_empty_data()  # Iniciar el DataFrame vacío si no existe el archivo
-
-# Guardar en el archivo result-rating.csv en la carpeta data
-ratings.to_csv(result_file_path, mode='w', header=True, index=False)  # Sobrescribir el archivo con todos los datos
-
 
 # ====================================
 # Página Principal: Tabs
@@ -157,7 +152,60 @@ with tab1:
         nuevo_cargo = st.selectbox(languages[st.session_state.language]["position"], options=[
             "Director Deportivo", "Entrenador", "Asistente", "Jefe de Scouting", "Scouting", "CEO", "Analista de Datos"
         ])
-        nuevo_pais = st.selectbox(languages[st.session_state.language]["country"], options=["España", "Argentina", "México"])  # Lista de países de ejemplo
+        countries = {
+    "es": [
+        "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Antigua y Barbuda", "Arabia Saudita", "Argelia", 
+        "Argentina", "Armenia", "Australia", "Austria", "Azerbaiyán", "Bahamas", "Barbados", "Baréin", "Bélgica", 
+        "Belice", "Benin", "Bielorrusia", "Bolivia", "Bosnia y Herzegovina", "Botsuana", "Brasil", "Brunéi", 
+        "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Camboya", "Camerún", "Canadá", "Chile", "China", 
+        "Chipre", "Colombia", "Comoras", "Congo", "Corea del Norte", "Corea del Sur", "Costa de Marfil", 
+        "Costa Rica", "Croacia", "Cuba", "Dinamarca", "Dominica", "Ecuador", "Egipto", "El Salvador", 
+        "Emiratos Árabes Unidos", "Escocia", "Eslovenia", "Eslovaquia", "España", "Estonia", "Estados Unidos", 
+        "Etiopía", "Fiji", "Filipinas", "Finlandia", "Francia", "Gambia", "Georgia", "Ghana", "Granada", 
+        "Grecia", "Guatemala", "Guinea", "Guinea-Bisáu", "Guinea Ecuatorial", "Haití", "Holanda", "Honduras", 
+        "Hungría", "India", "Indonesia", "Irán", "Iraq", "Irlanda", "Isla de Man", "Islandia", "Islas Cook", 
+        "Islas Feroe", "Islas Salomón", "Israel", "Italia", "Jamaica", "Japón", "Jordania", "Kazajistán", 
+        "Kenia", "Kirguistán", "Kiribati", "Kuwait", "Laos", "Lesoto", "Letonia", "Líbano", "Liberia", 
+        "Libia", "Liechtenstein", "Lituania", "Luxemburgo", "Malasia", "Malawi", "Maldivas", "Mali", 
+        "Malta", "Marruecos", "Mauricio", "Mauritania", "México", "Micronesia", "Mónaco", "Mongolia", 
+        "Mozambique", "Namibia", "Nepal", "Nicaragua", "Nigeria", "Noruega", "Nueva Zelanda", "Omán", 
+        "Países Bajos", "Pakistán", "Panamá", "Paraguay", "Perú", "Polonia", "Portugal", "Reino Unido", 
+        "República Centroafricana", "República Checa", "República del Congo", "República Dominicana", 
+        "República de Irlanda", "República Democrática del Congo", "Rumanía", "Rusia", "San Cristóbal y Nieves", 
+        "San Marino", "Santa Lucía", "Santo Tomé y Príncipe", "Senegal", "Serbia", "Seychelles", "Sierra Leona", 
+        "Singapur", "Sudáfrica", "Sudán", "Suecia", "Suiza", "Siria", "Tailandia", "Tanzania", "Tayikistán", 
+        "Tierra de Fuego", "Togo", "Tonga", "Trinidad y Tobago", "Túnez", "Turkmenistán", "Turquía", 
+        "Uganda", "Ucrania", "Uruguay", "Vanuatu", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabue"
+    ],
+    "en": [
+        "Afghanistan", "Albania", "Germany", "Andorra", "Angola", "Antigua and Barbuda", "Saudi Arabia", 
+        "Algeria", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Barbados", 
+        "Bahrain", "Belgium", "Belize", "Benin", "Belarus", "Bolivia", "Bosnia and Herzegovina", "Botswana", 
+        "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cape Verde", "Cambodia", "Cameroon", 
+        "Canada", "Chile", "China", "Cyprus", "Colombia", "Comoros", "Congo", "North Korea", "South Korea", 
+        "Ivory Coast", "Costa Rica", "Croatia", "Cuba", "Denmark", "Dominica", "Ecuador", "Egypt", 
+        "El Salvador", "United Arab Emirates", "Scotland", "Slovenia", "Slovakia", "Spain", "Estonia", 
+        "United States", "Ethiopia", "Fiji", "Philippines", "Finland", "France", "Gambia", "Georgia", 
+        "Ghana", "Grenada", "Greece", "Guatemala", "Guinea", "Guinea-Bissau", "Equatorial Guinea", 
+        "Haiti", "Netherlands", "Honduras", "Hungary", "India", "Indonesia", "Iran", "Iraq", "Ireland", 
+        "Isle of Man", "Iceland", "Cook Islands", "Faroe Islands", "Solomon Islands", "Israel", "Italy", 
+        "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kyrgyzstan", "Kiribati", "Kuwait", "Laos", 
+        "Lesotho", "Latvia", "Lebanon", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", 
+        "Malaysia", "Malawi", "Maldives", "Mali", "Malta", "Morocco", "Mauritius", "Mauritania", "Mexico", 
+        "Micronesia", "Monaco", "Mongolia", "Mozambique", "Namibia", "Nepal", "Nicaragua", "Nigeria", 
+        "Norway", "New Zealand", "Oman", "Netherlands", "Pakistan", "Panama", "Paraguay", "Peru", "Poland", 
+        "Portugal", "United Kingdom", "Central African Republic", "Czech Republic", "Republic of the Congo", 
+        "Dominican Republic", "Ireland", "Democratic Republic of the Congo", "Romania", "Russia", 
+        "Saint Kitts and Nevis", "San Marino", "Saint Lucia", "Sao Tome and Principe", "Senegal", "Serbia", 
+        "Seychelles", "Sierra Leone", "Singapore", "South Africa", "Sudan", "Sweden", "Switzerland", 
+        "Syria", "Thailand", "Tanzania", "Tajikistan", "Fire Land", "Togo", "Tonga", "Trinidad and Tobago", 
+        "Tunisia", "Turkmenistan", "Turkey", "Uganda", "Ukraine", "Uruguay", "Vanuatu", "Venezuela", 
+        "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+    ]
+}
+
+        nuevo_pais = st.selectbox(languages[st.session_state.language]["country"], options=countries[st.session_state.language])
+
         nuevo_club = st.text_input(languages[st.session_state.language]["club"])
 
         st.markdown("### " + languages[st.session_state.language]["evaluation"])
@@ -216,9 +264,31 @@ with tab1:
                 ratings = pd.concat([ratings, new_rating], ignore_index=True)
                 st.success("¡Valoración enviada exitosamente!")
 
-                # Guardar en el archivo result-rating.csv en la carpeta data
-                result_file_path = os.path.join('data', 'result-rating.csv')
-                ratings.to_csv(result_file_path, mode='w', header=True, index=False)  # Sobrescribir el archivo con todos los datos
+                # Guardar en el archivo correspondiente según el idioma seleccionado
+                if st.session_state.language == "es":
+                    ratings.to_csv(result_file_path_es, mode='w', header=True, index=False)  # Sobrescribir el archivo con todos los datos en español
+                else:
+                    # Renombrar las columnas al inglés antes de guardar
+                    new_rating.rename(columns={
+                        'Pais': 'Country',
+                        'Club': 'Club',
+                        'Cargo': 'Position',
+                        'Nombre': 'Name',
+                        'Agente': 'Agent',
+                        'Claridad en la Comunicación': 'Clarity in Communication',
+                        'Rapidez en las Respuestas': 'Speed of Response',
+                        'Actitud Profesional': 'Professional Attitude',
+                        'Cortesía y Amabilidad': 'Courtesy and Kindness',
+                        'Eficiencia en Procesos': 'Efficiency in Processes',
+                        'Solución de Problemas': 'Problem Solving',
+                        'Fiabilidad de la Información': 'Reliability of Information',
+                        'Cumplimiento de Compromisos': 'Commitment Fulfillment',
+                        'Accesibilidad': 'Accessibility',
+                        'Flexibilidad': 'Flexibility',
+                        'Comentarios Generales': 'General Comments',
+                        'Estrellas': 'Stars'
+                    }, inplace=True)
+                    ratings.to_csv(result_file_path_en, mode='w', header=True, index=False)  # Sobrescribir el archivo con todos los datos en inglés
 
 # ----------------------------
 # Tab 2: Valoraciones Recientes
