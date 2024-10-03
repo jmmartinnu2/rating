@@ -9,9 +9,8 @@ import altair as alt
 # Configuración Inicial de la Aplicación
 # ====================================
 
-# Asegurarse de que los directorios 'data' y 'models' existan
+# Asegurarse de que el directorio 'data' exista
 os.makedirs('data', exist_ok=True)
-os.makedirs('models', exist_ok=True)
 
 # Configuración de la página
 st.set_page_config(
@@ -122,7 +121,19 @@ def create_empty_data():
         'Comentarios Generales', 'Estrellas'
     ])
 
-ratings = create_empty_data()  # Iniciar el DataFrame vacío
+# Asegurarse de que el directorio 'data' exista
+os.makedirs('data', exist_ok=True)
+
+# Verificar si el archivo CSV existe y cargarlo
+result_file_path = os.path.join('data', 'result-rating.csv')  # Ruta local
+if os.path.exists(result_file_path):
+    ratings = pd.read_csv(result_file_path)
+else:
+    ratings = create_empty_data()  # Iniciar el DataFrame vacío si no existe el archivo
+
+# Guardar en el archivo result-rating.csv en la carpeta data
+ratings.to_csv(result_file_path, mode='w', header=True, index=False)  # Sobrescribir el archivo con todos los datos
+
 
 # ====================================
 # Página Principal: Tabs
@@ -207,12 +218,7 @@ with tab1:
 
                 # Guardar en el archivo result-rating.csv en la carpeta data
                 result_file_path = os.path.join('data', 'result-rating.csv')
-                if os.path.exists(result_file_path):
-                    # Si el archivo ya existe, se agrega al final
-                    new_rating.to_csv(result_file_path, mode='a', header=False, index=False)
-                else:
-                    # Si no existe, se crea el archivo con el encabezado
-                    new_rating.to_csv(result_file_path, mode='w', header=True, index=False)
+                ratings.to_csv(result_file_path, mode='w', header=True, index=False)  # Sobrescribir el archivo con todos los datos
 
 # ----------------------------
 # Tab 2: Valoraciones Recientes
@@ -245,11 +251,8 @@ with tab2:
             update_mode=GridUpdateMode.NO_UPDATE
         )
     
-    # Seleccionar las últimas 10 valoraciones y eliminar el índice
-    recent_ratings = ratings.tail(10).reset_index(drop=True)
-    
     # Mostrar la tabla usando AgGrid
-    display_ratings_table(recent_ratings)
+    display_ratings_table(ratings)
 
 # ----------------------------
 # Tab 3: Visualización de Datos
