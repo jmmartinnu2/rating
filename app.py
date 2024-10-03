@@ -205,7 +205,7 @@ with tab1:
                 ratings = pd.concat([ratings, new_rating], ignore_index=True)
                 st.success("¡Valoración enviada exitosamente!")
 
-                # Guardar en el archivo result-rating.csv
+                # Guardar en el archivo result-rating.csv en la carpeta data
                 result_file_path = os.path.join('data', 'result-rating.csv')
                 if os.path.exists(result_file_path):
                     # Si el archivo ya existe, se agrega al final
