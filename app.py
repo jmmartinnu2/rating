@@ -149,9 +149,21 @@ with tab1:
     # Formulario para ingresar información y valoraciones
     with st.form("rating_form"):
         nuevo_nombre = st.text_input(languages[st.session_state.language]["name"])
-        nuevo_cargo = st.selectbox(languages[st.session_state.language]["position"], options=[
-            "Director Deportivo", "Entrenador", "Asistente", "Jefe de Scouting", "Scouting", "CEO", "Analista de Datos"
-        ])
+        # Definir la lista de cargos
+        positions = {
+            "es": [
+                "Director Deportivo", "Entrenador", "Asistente", 
+                "Jefe de Scouting", "Scouting", "CEO", "Analista de Datos"
+            ],
+            "en": [
+                "Sports Director", "Coach", "Assistant", 
+                "Head Scout", "Scout", "CEO", "Data Analyst"
+            ]
+        }
+
+        # Luego, en el formulario de evaluación:
+        nuevo_cargo = st.selectbox(languages[st.session_state.language]["position"], options=positions[st.session_state.language])
+
         countries = {
     "es": [
         "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Antigua y Barbuda", "Arabia Saudita", "Argelia", 
