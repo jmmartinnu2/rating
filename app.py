@@ -253,6 +253,34 @@ with tab1:
                 # Calcular las estrellas basadas en la media de las valoraciones
                 estrellas = (claridad_com + rapidez_resp + actitud_prof + cortesía + eficiencia_proc + solucion_prob + fiabilidad_info + cumplimiento + accesibilidad + flexibilidad) / 10
                 
+                            # Definir un diccionario para las columnas
+            column_names = {
+                "es": [
+                    "Pais", "Club", "Cargo", "Nombre", "Agente",
+                    "Claridad en la Comunicación", "Rapidez en las Respuestas",
+                    "Actitud Profesional", "Cortesía y Amabilidad",
+                    "Eficiencia en Procesos", "Solución de Problemas",
+                    "Fiabilidad de la Información", "Cumplimiento de Compromisos",
+                    "Accesibilidad", "Flexibilidad", "Comentarios Generales", "Estrellas"
+                ],
+                "en": [
+                    "Country", "Club", "Position", "Name", "Agent",
+                    "Clarity in Communication", "Speed of Response",
+                    "Professional Attitude", "Courtesy and Kindness",
+                    "Efficiency in Processes", "Problem Solving",
+                    "Reliability of Information", "Commitment Fulfillment",
+                    "Accessibility", "Flexibility", "General Comments", "Stars"
+                ]
+            }
+
+            # Verificar si el archivo CSV existe y cargarlo
+            result_file_path = os.path.join('data', 'result-rating.csv')
+            if os.path.exists(result_file_path):
+                ratings = pd.read_csv(result_file_path)
+            else:
+                ratings = create_empty_data()  # Iniciar el DataFrame vacío si no existe el archivo
+                
+                
                 new_rating = pd.DataFrame({
                     'Pais': [nuevo_pais],
                     'Club': [nuevo_club],
